@@ -38,12 +38,13 @@ class Block {
     validate() {
         let self = this;
         return new Promise((resolve, reject) => {
-            // Save in auxiliary variable the current block hash
-            const currentHash = self.hash                         
+            // Save in auxiliary variable the current block
+            // assign null to the block before calculating the hash
+            let clonedBlock = { ...self, hash: null };
             // Recalculate the hash of the Block
-            const newHash = SHA256(JSON.stringify(self)).toString();
+            let newHash = SHA256(JSON.stringify(clonedBlock)).toString();
             // Comparing if the hashes changed
-            const isValid = currentHash === newHash;
+            const isValid = self.hash === newHash;
             // Returning the Block is not valid
             // Returning the Block is valid
             resolve(isValid);

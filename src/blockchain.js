@@ -66,7 +66,6 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             try {
                 const currentHeight = await self.getChainHeight()
-                console.log(currentHeight);
                 if (currentHeight > -1) {
                     block.previousBlockHash = self.chain[currentHeight].hash;
                 }
@@ -154,7 +153,7 @@ class Blockchain {
     getBlockByHash(hash) {
         let self = this;
         return new Promise((resolve, reject) => {
-            const block = self.chain.filter((block) => block.hash === hash)[0];
+            const block = self.chain.find((block) => block.hash === hash);
             if (block) {
                 resolve(block)
             } else {
@@ -211,13 +210,11 @@ class Blockchain {
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
             self.chain.forEach(async(block) => {
-                try {
-                    await block.validate();  
-                    if((block.height > 0) && (block.previousBlockHash !== self.chain[block.height - 1].hash)){
-                        errorLog.push(`Block ${block.height} previousBlockHash is not valid`);
-                    }
-                } catch (error) {
-                    errorLog.push(error.message);
+                const isValid = await block.validate();  
+                if (!isValid) errorLog.push('Block Invalid');
+
+                if((block.height > 0) && (block.previousBlockHash !== self.chain[block.height - 1].hash)){
+                    errorLog.push(`Block ${block.height} previousBlockHash is not valid`);
                 }
             });
             resolve(errorLog);
