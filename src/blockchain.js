@@ -76,7 +76,13 @@ class Blockchain {
 
                 self.chain.push(block);
                 self.height = block.height;
-                resolve(block);
+
+                let errorLogs = await self.validateChain();
+                if (errorLogs.length === 0) {
+                    resolve(block);
+                } else {
+                    reject(errorLogs);
+                }
             } catch (error) {
                 reject(error);
             }
